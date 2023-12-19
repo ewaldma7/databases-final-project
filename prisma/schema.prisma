@@ -1,0 +1,81 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model pitcher_career_stats {
+  Id     Int     @id
+  Name   String? @db.VarChar(255)
+  H      Int?
+  twoB   Int?    @map("2B")
+  threeB Int?    @map("3B")
+  HR     Int?
+  BB     Int?
+  SO     Int?
+  IBB    Int?
+  HBP    Int?
+}
+
+model pitcher_info {
+  id         Int       @id @default(autoincrement())
+  Name       String?   @db.VarChar(255)
+  Age        Int?
+  Height     Int?
+  Handedness String?   @db.VarChar(10)
+  College    String?   @db.VarChar(255)
+  Birthday   DateTime? @db.Date
+  StartYear  Int?      @db.Year
+  EndYear    Int?      @db.Year
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model played_for {
+  PitcherId Int
+  TeamId    Int
+
+  @@id([PitcherId, TeamId])
+}
+
+model teams_info {
+  Id           Int    @id @default(autoincrement())
+  Name         String @db.VarChar(255)
+  Abbreviation String @db.VarChar(5)
+  City         String @db.VarChar(100)
+  State        String @db.VarChar(5)
+  Stadium      String @db.VarChar(255)
+  League       String @db.VarChar(10)
+  Division     String @db.VarChar(10)
+}
+
+model vs_pitcher {
+  BatterName  String? @db.VarChar(255)
+  PitcherName String? @db.VarChar(255)
+  BatterId    String  @default("") @db.VarChar(255)
+  PitcherID   Int     @default(0)
+  B           String? @db.VarChar(255)
+  PA          Int?
+  AB          Int?
+  H           Int?
+  twoB        Int?    @map("2B")
+  threeB      Int?    @map("3B")
+  HR          Int?
+  RBI         Int?
+  BB          Int?
+  SO          Int?
+  BA          Float?  @db.Float
+  OBP         Float?  @db.Float
+  SLG         Float?  @db.Float
+  OPS         Float?  @db.Float
+  SH          Int?
+  SF          Int?
+  IBB         Int?
+  HBP         Int?
+  GIDP        Int?
+  CurrentTm   String? @db.VarChar(255)
+
+  @@id([PitcherID, BatterId])
+}
