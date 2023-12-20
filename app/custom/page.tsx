@@ -359,7 +359,7 @@ const CustomPage = () => {
                             </div>
 
                             <div>
-                                <label htmlFor='vsBattersOnPitchersTeam'>Vs Batters from Pitcher's Previous Team(s)</label>
+                                <label htmlFor='vsBattersOnPitchersTeam'>Vs Batters from Pitchers Previous Team(s)</label>
                                 <input
                                     type='text'
                                     id='vsBattersOnPitchersTeam'
