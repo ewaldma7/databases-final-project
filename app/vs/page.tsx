@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import { Button, Table, Text, TextFieldInput, TextFieldRoot } from '@radix-ui/themes';
+import { Button, Slider, Text, TextFieldInput, TextFieldRoot } from '@radix-ui/themes';
 
 interface Row {
     BatterName: string;
@@ -36,7 +36,8 @@ interface Row {
     const [rows, setRows] = useState<Row[]>([]);
     const [batterName, setBatterName] = useState<string>('');
     const [pitcherName, setPitcherName] = useState<string>('');
-    const omittedKeys = ["BatterId", "PitcherID", "SH", "SF"]
+    const [minPlateAppearances, setMinPlateAppearances] = useState(5);
+    const omittedKeys = ["BatterId", "PitcherID", "SH", "SF", "CurrentTm"]
     const map = new Map([["twoB", "2B"], ["threeB", "3B"]]);
     const filterKeys = (keys: string[]) => keys.filter(key => !omittedKeys.includes(key));
     const displayHeader = (key: string) => {
@@ -47,7 +48,7 @@ interface Row {
     const handleGenerateTable = async () => {
         try {
           // Fetch data from the API using axios or perform any necessary operations
-          const response = await axios.get(`/api/vs/matchup?BatterName=${encodeURIComponent(batterName)}&PitcherName=${encodeURIComponent(pitcherName)}`);
+          const response = await axios.get(`/api/vs?BatterName=${encodeURIComponent(batterName)}&PitcherName=${encodeURIComponent(pitcherName)}&MinPA=${encodeURIComponent(minPlateAppearances)}`);
           setRows(response.data);
         } catch (error) {
           console.error('Error fetching data:', error);
@@ -78,6 +79,16 @@ interface Row {
               onChange={(e) => setPitcherName(e.target.value)}
             />
           </TextFieldRoot>
+
+          <Text className='self-center'>Min PA: {minPlateAppearances}</Text>
+        <input
+          type='range'
+          min={1}
+          max={50}
+          value={minPlateAppearances}
+          onChange={(e) => setMinPlateAppearances(Number(e.target.value))}
+        />
+
           <Button
           className='bg-green-500 text-white p-2 rounded-md'
           onClick={handleGenerateTable}
