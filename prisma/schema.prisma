@@ -21,15 +21,16 @@ model pitcher_career_stats {
 }
 
 model pitcher_info {
-  id         Int       @id @default(autoincrement())
-  Name       String?   @db.VarChar(255)
+  id         Int          @id @default(autoincrement())
+  Name       String?      @db.VarChar(255)
   Age        Int?
   Height     Int?
-  Handedness String?   @db.VarChar(10)
-  College    String?   @db.VarChar(255)
-  Birthday   DateTime? @db.Date
-  StartYear  Int?      @db.Year
-  EndYear    Int?      @db.Year
+  Handedness String?      @db.VarChar(10)
+  College    String?      @db.VarChar(255)
+  Birthday   DateTime?    @db.Date
+  StartYear  Int?         @db.Year
+  EndYear    Int?         @db.Year
+  vs_pitcher vs_pitcher[]
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
@@ -52,30 +53,31 @@ model teams_info {
 }
 
 model vs_pitcher {
-  BatterName  String? @db.VarChar(255)
-  PitcherName String? @db.VarChar(255)
-  BatterId    String  @default("") @db.VarChar(255)
-  PitcherID   Int     @default(0)
-  B           String? @db.VarChar(255)
-  PA          Int?
-  AB          Int?
-  H           Int?
-  twoB        Int?    @map("2B")
-  threeB      Int?    @map("3B")
-  HR          Int?
-  RBI         Int?
-  BB          Int?
-  SO          Int?
-  BA          Float?  @db.Float
-  OBP         Float?  @db.Float
-  SLG         Float?  @db.Float
-  OPS         Float?  @db.Float
-  SH          Int?
-  SF          Int?
-  IBB         Int?
-  HBP         Int?
-  GIDP        Int?
-  CurrentTm   String? @db.VarChar(255)
+  BatterName   String?       @db.VarChar(255)
+  PitcherName  String?       @db.VarChar(255)
+  BatterId     String        @default("") @db.VarChar(255)
+  PitcherID    Int           @default(0)
+  B            String?       @db.VarChar(255)
+  PA           Int?
+  AB           Int?
+  H            Int?
+  twoB         Int?          @map("2B")
+  threeB       Int?          @map("3B")
+  HR           Int?
+  RBI          Int?
+  BB           Int?
+  SO           Int?
+  BA           Float?        @db.Float
+  OBP          Float?        @db.Float
+  SLG          Float?        @db.Float
+  OPS          Float?        @db.Float
+  SH           Int?
+  SF           Int?
+  IBB          Int?
+  HBP          Int?
+  GIDP         Int?
+  CurrentTm    String?       @db.VarChar(255)
+  pitcher_info pitcher_info? @relation(fields: [PitcherID], references: [id])
 
   @@id([PitcherID, BatterId])
 }

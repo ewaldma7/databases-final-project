@@ -57,7 +57,7 @@ const CustomPage = () => {
         isActivePitcher: '',
         latestStartDate: '',
         teamPlayedFor: '',
-        careerStrikeoutsThreshold: '0',
+        careerStrikeoutsThreshold: 0,
     });
     const [pitcherFormData, setPitcherFormData] = useState({
         pitcherName: '',
@@ -66,9 +66,9 @@ const CustomPage = () => {
         vsBattersInLeague: '',
         vsBatterTeam: '',
         vsBattersOnPitchersTeam: '',
-        homeRunThreshold: '',
-        avgThreshold: '',
-        obpThreshold: '',
+        homeRunThreshold: 0,
+        avgThreshold: 0,
+        obpThreshold: 0,
     });
 
     const handleBatterInputChange = (e: any) => {
@@ -90,8 +90,10 @@ const CustomPage = () => {
     const handleGenerateTable = async () => {
         try {
             // Fetch data from the API using axios or perform any necessary operations
-            const response = await axios.get(`/api/vs?BatterName=${encodeURIComponent(batterName)}&PitcherName=${encodeURIComponent(pitcherName)}&MinPA=${encodeURIComponent(minPlateAppearances)}`);
-            setRows(response.data);
+                const response = (currentView === "Batter") 
+                ? await axios.get(`/api/vs?BatterName=${encodeURIComponent(batterName)}&PitcherName=${encodeURIComponent(pitcherName)}&MinPA=${encodeURIComponent(minPlateAppearances)}`)
+                : await axios.get("/");
+             setRows(response.data);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -386,6 +388,7 @@ const CustomPage = () => {
                                 <label htmlFor='avgThreshold'>Average Threshold:</label>
                                 <input
                                     type='number'
+                                    step="0.001"
                                     id='avgThreshold'
                                     name='avgThreshold'
                                     value={pitcherFormData.avgThreshold}

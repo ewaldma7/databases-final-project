@@ -11,7 +11,6 @@ const Navbar = () => {
   const currentPath = usePathname();
   const links = [
     {label: 'Dashboard', href: "/"},
-    {label: 'Pitcher', href: "/pitcher"},
     {label: 'VS', href: "/vs"},
     {label: 'Custom Queries', href: "/custom"},
   ]
