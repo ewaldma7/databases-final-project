@@ -48,6 +48,12 @@ export async function GET(request: NextRequest) {
     //   },
     // });
     // console.log('Info Rows:', info_rows);
+    if (!pitcherName) {
+        return NextResponse.json(
+          { error: 'Specify PitcherName' },
+          { status: 400 }
+        );
+      }
     const rows = await prisma.vs_pitcher.findMany({
       where: {
         PitcherName: { equals: pitcherName },

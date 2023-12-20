@@ -34,12 +34,10 @@ interface Row {
 
 const CustomPage = () => {
     const [rows, setRows] = useState<Row[]>([]);
-    const [batterName, setBatterName] = useState<string>('');
-    const [pitcherName, setPitcherName] = useState<string>('');
-    const [minPlateAppearances, setMinPlateAppearances] = useState(5);
     const [currentView, setCurrentView] = useState("Batter");
     const toggleView = () => {
         setCurrentView(currentView === "Batter" ? "Pitcher" : "Batter");
+        setRows([]);
     };
     const omittedKeys = ["BatterId", "PitcherID", "SH", "SF", "CurrentTm"]
     const map = new Map([["twoB", "2B"], ["threeB", "3B"]]);
@@ -90,10 +88,12 @@ const CustomPage = () => {
     const handleGenerateTable = async () => {
         try {
             // Fetch data from the API using axios or perform any necessary operations
-                const response = (currentView === "Batter") 
-                ? await axios.get(`/api/vs?BatterName=${encodeURIComponent(batterName)}&PitcherName=${encodeURIComponent(pitcherName)}&MinPA=${encodeURIComponent(minPlateAppearances)}`)
-                : await axios.get("/");
-             setRows(response.data);
+            const endpoint = (currentView === "Batter")
+                ? `/api/batter?BatterName=${encodeURIComponent(batterFormData.batterName)}&MinPA=${encodeURIComponent(batterFormData.minPlateAppearances)}&Active=${encodeURIComponent(batterFormData.isActivePitcher)}&Handedness=${encodeURIComponent(batterFormData.pitcherHandedness)}&AttendedCollege=${encodeURIComponent(batterFormData.attendedCollege)}&MinAge=${encodeURIComponent(batterFormData.minPitcherAge)}&Strikeouts=${encodeURIComponent(batterFormData.careerStrikeoutsThreshold)}&PlayedFor=${encodeURIComponent(batterFormData.teamPlayedFor)}&Year=${encodeURIComponent(batterFormData.latestStartDate)}`
+                : `/api/pitcher?PitcherName=${encodeURIComponent(pitcherFormData.pitcherName)}&MinPA=${encodeURIComponent(pitcherFormData.minPlateAppearances)}&Active=${encodeURIComponent(pitcherFormData.isActiveBatter)}&League=${encodeURIComponent(pitcherFormData.vsBattersInLeague)}&Team=${encodeURIComponent(pitcherFormData.vsBatterTeam)}&PitchersTeam=${encodeURIComponent(pitcherFormData.vsBattersOnPitchersTeam)}&Hr=${encodeURIComponent(pitcherFormData.homeRunThreshold)}&Avg=${encodeURIComponent(pitcherFormData.avgThreshold)}&Obp=${encodeURIComponent(pitcherFormData.obpThreshold)}`;
+
+            const response = await axios.get(endpoint);
+            setRows(response.data);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -129,7 +129,7 @@ const CustomPage = () => {
                                 </TextFieldRoot>
                             </div>
                             <div>
-                                <label htmlFor='minPlateAppearances'>Min PA: {batterFormData.minPlateAppearances}</label>
+                                <label htmlFor='minPlateAppearances'>Min Plate Appearances: {batterFormData.minPlateAppearances}</label>
                                 <input
                                     type='range'
                                     id='minPlateAppearances'
@@ -170,8 +170,8 @@ const CustomPage = () => {
                                     className='border rounded-md p-2 w-full'
                                 >
                                     <option value=''>Any</option>
-                                    <option value='LHP'>Left-Handed</option>
-                                    <option value='RHP'>Right-Handed</option>
+                                    <option value='LHP'>Left Handed</option>
+                                    <option value='RHP'>Right Handed</option>
                                 </select>
                             </div>
 

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     console.log('Batter Name:', batterName);
     console.log('Attended College:', attendedCollege);
     console.log('Min PA:', minPA);
-    console.log('Pitcher Handedness:', pitcherHandedness);
+    console.log('Pitcher Handedness Value:', pitcherHandedness);
     console.log('Min Age:', minAge);
     console.log('Is Active Pitcher:', isActivePitcher);
     
@@ -21,6 +21,12 @@ export async function GET(request: NextRequest) {
     // const teamPlayedFor = request.nextUrl.searchParams.get("PlayedFor");
     // const year = request.nextUrl.searchParams.get("Year");
     //subquery
+    if (!batterName) {
+      return NextResponse.json(
+        { error: 'Specify BatterName' },
+        { status: 400 }
+      );
+    }
     const info_rows = await prisma.pitcher_info.findMany({
       select: {id: true},
       where: {
