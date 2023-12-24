@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import { Button, Text, TextFieldInput, TextFieldRoot, Heading } from '@radix-ui/themes';
+import { Button, Text, TextFieldInput, TextFieldRoot, Heading, ScrollArea, Callout} from '@radix-ui/themes';
 
 interface Row {
     BatterName: string;
@@ -30,10 +30,14 @@ interface Row {
     GIDP?: number;
     CurrentTm?: string;
 }
+interface PitcherObj {
+    Name: string;
+}
 
 
 const CustomPage = () => {
     const [rows, setRows] = useState<Row[]>([]);
+    const [pitcherNames, setPitcherNames] = useState<PitcherObj[]>([]);
     const [currentView, setCurrentView] = useState("Batter");
     const toggleView = () => {
         setCurrentView(currentView === "Batter" ? "Pitcher" : "Batter");
@@ -69,6 +73,10 @@ const CustomPage = () => {
         obpThreshold: 0,
     });
 
+    useEffect(() => {
+        readPitcherNames();
+    }, []);
+
     const handleBatterInputChange = (e: any) => {
         const { name, value } = e.target;
         setBatterFormData({
@@ -85,8 +93,23 @@ const CustomPage = () => {
         });
     };
 
+    const readPitcherNames = async () => {
+        try {
+            // Fetch data from the API using axios or perform any necessary operations
+            const endpoint = `/api/pitcher/allpitchers`;
+            const response = await axios.get(endpoint);
+            const sortedNames = response.data.slice().sort((a: PitcherObj, b: PitcherObj) =>
+            a.Name.toUpperCase() < b.Name.toUpperCase() ? -1 : a.Name.toUpperCase() > b.Name.toUpperCase() ? 1 : 0
+        );
+            setPitcherNames(sortedNames);
+        } catch (error) {
+            console.error('Error fetching pitcher names:', error);
+        }
+    };
+
     const handleGenerateTable = async () => {
         try {
+
             // Fetch data from the API using axios or perform any necessary operations
             const endpoint = (currentView === "Batter")
                 ? `/api/batter?BatterName=${encodeURIComponent(batterFormData.batterName)}&MinPA=${encodeURIComponent(batterFormData.minPlateAppearances)}&Active=${encodeURIComponent(batterFormData.isActivePitcher)}&Handedness=${encodeURIComponent(batterFormData.pitcherHandedness)}&AttendedCollege=${encodeURIComponent(batterFormData.attendedCollege)}&MinAge=${encodeURIComponent(batterFormData.minPitcherAge)}&Strikeouts=${encodeURIComponent(batterFormData.careerStrikeoutsThreshold)}&PlayedFor=${encodeURIComponent(batterFormData.teamPlayedFor)}&Year=${encodeURIComponent(batterFormData.latestStartDate)}`
@@ -287,16 +310,16 @@ const CustomPage = () => {
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             <div>
                                 <label htmlFor='pitcherName'>Pitcher Name:</label>
-                                <TextFieldRoot>
-                                    <TextFieldInput
-                                        id='pitcherName'
-                                        name='pitcherName'
-                                        className='border rounded-md p-2 w-full'
-                                        placeholder='Enter Pitcher Name'
-                                        value={pitcherFormData.pitcherName}
-                                        onChange={handlePitcherInputChange}
-                                    />
-                                </TextFieldRoot>
+                                <select
+                                    id='pitcherName'
+                                    name='pitcherName'
+                                    onChange={handlePitcherInputChange}
+                                    value={pitcherFormData.pitcherName}
+                                    className='border rounded-md p-2 w-full'
+                                >
+                                    <option value="" disabled>Select pitcher:</option>
+                                    {pitcherNames?.map(obj => <option value={obj.Name}>{obj.Name}</option>)}
+                                </select>
                             </div>
                             <div>
                                 <label htmlFor='minPlateAppearances'>Min Plate Appearances: {pitcherFormData.minPlateAppearances}</label>
@@ -403,6 +426,7 @@ const CustomPage = () => {
                                 <label htmlFor='obpThreshold'>OBP Threshold:</label>
                                 <input
                                     type='number'
+                                    step="0.001"
                                     id='obpThreshold'
                                     name='obpThreshold'
                                     value={pitcherFormData.obpThreshold}
@@ -423,6 +447,7 @@ const CustomPage = () => {
                         </div>
                     </form>
                     {/* Display the generated table using regular HTML elements with Radix UI styling */}
+                    <ScrollArea type="always" scrollbars="vertical" style={{ height: 180 }}>
                     {rows.length > 0 ? (
                         <div className='overflow-auto'>
                             <table className='min-w-full divide-y divide-gray-200'>
@@ -447,6 +472,7 @@ const CustomPage = () => {
                             </table>
                         </div>
                     ) : <div className='max-w-xxl space-y-4'><Text >No available rows</Text></div>}
+                    </ScrollArea>
                 </div>}
         </>
     );

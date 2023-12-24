@@ -14,16 +14,6 @@ export async function GET(request: NextRequest) {
     const avgThreshold = Number(request.nextUrl.searchParams.get("Avg"));
     const obpThreshold = Number(request.nextUrl.searchParams.get("Obp"));
 
-    console.log('Pitcher Name:', pitcherName);
-    console.log('Min Plate Appearances:', minPA);
-    console.log('Is Active Batter:', isActiveBatter);
-    console.log('Vs Batters in League:', vsBattersInLeague);
-    console.log('Vs Batter Team:', vsBatterTeam);
-    console.log('Vs Batters on Pitcher\'s Team:', vsBattersOnPitchersTeam);
-    console.log('Home Run Threshold:', homeRunThreshold);
-    console.log('Avg Threshold:', avgThreshold);
-    console.log('Obp Threshold:', obpThreshold);
-
     
     // const strikeouts = Number(request.nextUrl.searchParams.get("Strikeouts"));
     // const teamPlayedFor = request.nextUrl.searchParams.get("PlayedFor");
