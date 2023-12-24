@@ -318,7 +318,7 @@ const CustomPage = () => {
                                     className='border rounded-md p-2 w-full'
                                 >
                                     <option value="" disabled>Select pitcher:</option>
-                                    {pitcherNames?.map(obj => <option value={obj.Name}>{obj.Name}</option>)}
+                                    {pitcherNames?.map((obj, index) => <option key={index} value={obj.Name}>{obj.Name}</option>)}
                                 </select>
                             </div>
                             <div>

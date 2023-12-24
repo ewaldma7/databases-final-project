@@ -11,8 +11,6 @@ export async function GET(request: NextRequest) {
         },
         distinct: ['Name']
     });
-
-    console.log('Retrieved Pitchers:', pitchers);
     return NextResponse.json(pitchers, { status: 200 });
   } catch (error) {
     console.error('Error fetching pitchers:', error);
