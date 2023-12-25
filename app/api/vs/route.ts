@@ -7,10 +7,6 @@ export async function GET(request: NextRequest) {
       const BatterName = request.nextUrl.searchParams.get("BatterName");
       const PitcherName = request.nextUrl.searchParams.get("PitcherName");
       const MinPA = request.nextUrl.searchParams.get("MinPA");
-  
-      console.log('BatterName:', BatterName);
-      console.log('PitcherName:', PitcherName);
-      console.log("MinPA:", MinPA);
 
       if (!BatterName && !PitcherName) {
         return NextResponse.json(

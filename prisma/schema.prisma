@@ -53,8 +53,8 @@ model teams_info {
 }
 
 model vs_pitcher {
-  BatterName   String?       @db.VarChar(255)
-  PitcherName  String?       @db.VarChar(255)
+  BatterName   String       @db.VarChar(255)
+  PitcherName  String       @db.VarChar(255)
   BatterId     String        @default("") @db.VarChar(255)
   PitcherID    Int           @default(0)
   B            String?       @db.VarChar(255)

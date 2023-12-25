@@ -11,6 +11,12 @@ export async function GET(request: NextRequest) {
         },
         distinct: ['Name']
     });
+    pitchers.sort((a, b) => {
+      if (a.Name && b.Name) {
+          return a.Name.localeCompare(b.Name);
+      }
+      return 0;
+  });
     return NextResponse.json(pitchers, { status: 200 });
   } catch (error) {
     console.error('Error fetching pitchers:', error);

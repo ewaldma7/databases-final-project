@@ -9,36 +9,10 @@ export async function GET(request: NextRequest) {
     const isActiveBatter = request.nextUrl.searchParams.get("Active");
     const vsBattersInLeague = request.nextUrl.searchParams.get("League");
     const vsBatterTeam = request.nextUrl.searchParams.get("Team");
-    const vsBattersOnPitchersTeam = request.nextUrl.searchParams.get("PitchersTeam");
     const homeRunThreshold = Number(request.nextUrl.searchParams.get("Hr"));
     const avgThreshold = Number(request.nextUrl.searchParams.get("Avg"));
     const obpThreshold = Number(request.nextUrl.searchParams.get("Obp"));
 
-    
-    // const strikeouts = Number(request.nextUrl.searchParams.get("Strikeouts"));
-    // const teamPlayedFor = request.nextUrl.searchParams.get("PlayedFor");
-    // const year = request.nextUrl.searchParams.get("Year");
-    //subquery
-    // const info_rows = await prisma.pitcher_info.findMany({
-    //   select: {id: true},
-    //   where: {
-    //     College: attendedCollege && attendedCollege.length > 0
-    //       ? attendedCollege === 'true'
-    //         ? { not: null }
-    //         : { equals: null }
-    //       : undefined,
-    //     Age: {gte: minAge},
-    //     Handedness: pitcherHandedness && pitcherHandedness.length > 0
-    //     ? {equals: pitcherHandedness}
-    //     : undefined,
-    //     EndYear: isActivePitcher && isActivePitcher.length > 0
-    //     ? isActivePitcher === 'true'
-    //       ? { equals: 0}
-    //       : { not: 0}
-    //     : undefined
-    //   },
-    // });
-    // console.log('Info Rows:', info_rows);
     if (!pitcherName) {
         return NextResponse.json(
           { error: 'Specify PitcherName' },

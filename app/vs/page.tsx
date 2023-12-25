@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import { Button, Text, TextFieldInput, TextFieldRoot } from '@radix-ui/themes';
-import { ToggleGroup, ToggleGroupItem } from '@radix-ui/react-toggle-group';
 
 interface Row {
     BatterName: string;
@@ -93,6 +92,7 @@ const VsPage = () => {
                         <Button
                             className='bg-green-500 text-white p-4 rounded-md'
                             onClick={handleGenerateTable}
+                            disabled={!!!batterName && !!!pitcherName}
                         >
                             Generate Table
                         </Button>

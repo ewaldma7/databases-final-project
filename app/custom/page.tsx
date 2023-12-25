@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
-import { Button, Text, TextFieldInput, TextFieldRoot, Heading, ScrollArea, Callout} from '@radix-ui/themes';
+import { Button, Text, TextFieldInput, TextFieldRoot, Heading} from '@radix-ui/themes';
 
 interface Row {
     BatterName: string;
@@ -33,11 +33,15 @@ interface Row {
 interface PitcherObj {
     Name: string;
 }
+interface BatterObj {
+    BatterName: string;
+}
 
 
 const CustomPage = () => {
     const [rows, setRows] = useState<Row[]>([]);
     const [pitcherNames, setPitcherNames] = useState<PitcherObj[]>([]);
+    const [batterNames, setBatterNames] = useState<BatterObj[]>([]);
     const [currentView, setCurrentView] = useState("Batter");
     const toggleView = () => {
         setCurrentView(currentView === "Batter" ? "Pitcher" : "Batter");
@@ -59,15 +63,12 @@ const CustomPage = () => {
         isActivePitcher: '',
         latestStartDate: '',
         teamPlayedFor: '',
-        careerStrikeoutsThreshold: 0,
     });
     const [pitcherFormData, setPitcherFormData] = useState({
         pitcherName: '',
         minPlateAppearances: 5,
         isActiveBatter: '',
         vsBattersInLeague: '',
-        vsBatterTeam: '',
-        vsBattersOnPitchersTeam: '',
         homeRunThreshold: 0,
         avgThreshold: 0,
         obpThreshold: 0,
@@ -75,6 +76,7 @@ const CustomPage = () => {
 
     useEffect(() => {
         readPitcherNames();
+        readBatterNames();
     }, []);
 
     const handleBatterInputChange = (e: any) => {
@@ -93,15 +95,23 @@ const CustomPage = () => {
         });
     };
 
+    const readBatterNames = async () => {
+        try {
+            // Fetch data from the API using axios or perform any necessary operations
+            const endpoint = `/api/batter/allbatters`;
+            const response = await axios.get(endpoint);
+            setBatterNames(response.data);
+        } catch (error) {
+            console.error('Error fetching pitcher names:', error);
+        }
+    };
+
     const readPitcherNames = async () => {
         try {
             // Fetch data from the API using axios or perform any necessary operations
             const endpoint = `/api/pitcher/allpitchers`;
             const response = await axios.get(endpoint);
-            const sortedNames = response.data.slice().sort((a: PitcherObj, b: PitcherObj) =>
-            a.Name.toUpperCase() < b.Name.toUpperCase() ? -1 : a.Name.toUpperCase() > b.Name.toUpperCase() ? 1 : 0
-        );
-            setPitcherNames(sortedNames);
+            setPitcherNames(response.data);
         } catch (error) {
             console.error('Error fetching pitcher names:', error);
         }
@@ -112,8 +122,8 @@ const CustomPage = () => {
 
             // Fetch data from the API using axios or perform any necessary operations
             const endpoint = (currentView === "Batter")
-                ? `/api/batter?BatterName=${encodeURIComponent(batterFormData.batterName)}&MinPA=${encodeURIComponent(batterFormData.minPlateAppearances)}&Active=${encodeURIComponent(batterFormData.isActivePitcher)}&Handedness=${encodeURIComponent(batterFormData.pitcherHandedness)}&AttendedCollege=${encodeURIComponent(batterFormData.attendedCollege)}&MinAge=${encodeURIComponent(batterFormData.minPitcherAge)}&Strikeouts=${encodeURIComponent(batterFormData.careerStrikeoutsThreshold)}&PlayedFor=${encodeURIComponent(batterFormData.teamPlayedFor)}&Year=${encodeURIComponent(batterFormData.latestStartDate)}`
-                : `/api/pitcher?PitcherName=${encodeURIComponent(pitcherFormData.pitcherName)}&MinPA=${encodeURIComponent(pitcherFormData.minPlateAppearances)}&Active=${encodeURIComponent(pitcherFormData.isActiveBatter)}&League=${encodeURIComponent(pitcherFormData.vsBattersInLeague)}&Team=${encodeURIComponent(pitcherFormData.vsBatterTeam)}&PitchersTeam=${encodeURIComponent(pitcherFormData.vsBattersOnPitchersTeam)}&Hr=${encodeURIComponent(pitcherFormData.homeRunThreshold)}&Avg=${encodeURIComponent(pitcherFormData.avgThreshold)}&Obp=${encodeURIComponent(pitcherFormData.obpThreshold)}`;
+                ? `/api/batter?BatterName=${encodeURIComponent(batterFormData.batterName)}&MinPA=${encodeURIComponent(batterFormData.minPlateAppearances)}&Active=${encodeURIComponent(batterFormData.isActivePitcher)}&Handedness=${encodeURIComponent(batterFormData.pitcherHandedness)}&AttendedCollege=${encodeURIComponent(batterFormData.attendedCollege)}&MinAge=${encodeURIComponent(batterFormData.minPitcherAge)}&PlayedFor=${encodeURIComponent(batterFormData.teamPlayedFor)}&Year=${encodeURIComponent(batterFormData.latestStartDate)}`
+                : `/api/pitcher?PitcherName=${encodeURIComponent(pitcherFormData.pitcherName)}&MinPA=${encodeURIComponent(pitcherFormData.minPlateAppearances)}&Active=${encodeURIComponent(pitcherFormData.isActiveBatter)}&League=${encodeURIComponent(pitcherFormData.vsBattersInLeague)}&Hr=${encodeURIComponent(pitcherFormData.homeRunThreshold)}&Avg=${encodeURIComponent(pitcherFormData.avgThreshold)}&Obp=${encodeURIComponent(pitcherFormData.obpThreshold)}`;
 
             const response = await axios.get(endpoint);
             setRows(response.data);
@@ -139,17 +149,17 @@ const CustomPage = () => {
                         {/* Batter details */}
                         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
                             <div>
-                                <label htmlFor='batterName'>Batter:</label>
-                                <TextFieldRoot>
-                                    <TextFieldInput
-                                        id='batterName'
-                                        name='batterName'
-                                        className='border rounded-md p-2 w-full'
-                                        placeholder='Enter Batter Name'
-                                        value={batterFormData.batterName}
-                                        onChange={handleBatterInputChange}
-                                    />
-                                </TextFieldRoot>
+                                <label htmlFor='batterName'>Batter Name:</label>
+                                <select
+                                    id='batterName'
+                                    name='batterName'
+                                    onChange={handleBatterInputChange}
+                                    value={batterFormData.batterName}
+                                    className='border rounded-md p-2 w-full'
+                                >
+                                    <option value="" disabled>Select batter:</option>
+                                    {batterNames?.map((obj, index) => <option key={index} value={obj.BatterName}>{obj.BatterName}</option>)}
+                                </select>
                             </div>
                             <div>
                                 <label htmlFor='minPlateAppearances'>Min Plate Appearances: {batterFormData.minPlateAppearances}</label>
@@ -211,6 +221,19 @@ const CustomPage = () => {
                                     className='border rounded-md p-2 w-full'
                                 />
                             </div>
+
+                            <div>
+                                <label htmlFor='teamPlayedFor'>Team Pitcher Played For:</label>
+                                <input
+                                    type='text'
+                                    id='teamPlayedFor'
+                                    name='teamPlayedFor'
+                                    value={batterFormData.teamPlayedFor}
+                                    onChange={handleBatterInputChange}
+                                    placeholder='Enter Team Abbreviation (Ex. NYM)'
+                                    className='border rounded-md p-2 w-full'
+                                />
+                            </div>
                         </div>
 
                         {/* Additional Pitcher options */}
@@ -237,32 +260,6 @@ const CustomPage = () => {
                                     id='latestStartDate'
                                     name='latestStartDate'
                                     value={batterFormData.latestStartDate}
-                                    onChange={handleBatterInputChange}
-                                    className='border rounded-md p-2 w-full'
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor='teamPlayedFor'>Team Pitcher Played For:</label>
-                                <input
-                                    type='text'
-                                    id='teamPlayedFor'
-                                    name='teamPlayedFor'
-                                    value={batterFormData.teamPlayedFor}
-                                    onChange={handleBatterInputChange}
-                                    placeholder='Enter Team Abbreviation (Ex. NYM)'
-                                    className='border rounded-md p-2 w-full'
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor='careerStrikeoutsThreshold'>Career Strikeouts Threshold:</label>
-                                <input
-                                    type='number'
-                                    id='careerStrikeoutsThreshold'
-                                    name='careerStrikeoutsThreshold'
-                                    value={batterFormData.careerStrikeoutsThreshold}
-                                    min={0}
                                     onChange={handleBatterInputChange}
                                     className='border rounded-md p-2 w-full'
                                 />
@@ -367,33 +364,6 @@ const CustomPage = () => {
                                     <option value='NL'>NL</option>
                                 </select>
                             </div>
-
-                            <div>
-                                <label htmlFor='vsBatterTeam'>Vs Batter on Specific Team:</label>
-                                <input
-                                    type='text'
-                                    id='vsBatterTeam'
-                                    name='vsBatterTeam'
-                                    value={pitcherFormData.vsBatterTeam}
-                                    onChange={handlePitcherInputChange}
-                                    placeholder='Enter Team Name'
-                                    className='border rounded-md p-2 w-full'
-                                />
-                            </div>
-
-                            <div>
-                                <label htmlFor='vsBattersOnPitchersTeam'>Vs Batters from Pitchers Previous Team(s)</label>
-                                <input
-                                    type='text'
-                                    id='vsBattersOnPitchersTeam'
-                                    name='vsBattersOnPitchersTeam'
-                                    value={pitcherFormData.vsBattersOnPitchersTeam}
-                                    onChange={handlePitcherInputChange}
-                                    placeholder='Enter Team Abbreviation (Ex. NYM)'
-                                    className='border rounded-md p-2 w-full'
-                                />
-                            </div>
-
                             <div>
                                 <label htmlFor='homeRunThreshold'>Home Run Threshold:</label>
                                 <input
@@ -447,7 +417,6 @@ const CustomPage = () => {
                         </div>
                     </form>
                     {/* Display the generated table using regular HTML elements with Radix UI styling */}
-                    <ScrollArea type="always" scrollbars="vertical" style={{ height: 180 }}>
                     {rows.length > 0 ? (
                         <div className='overflow-auto'>
                             <table className='min-w-full divide-y divide-gray-200'>
@@ -472,7 +441,6 @@ const CustomPage = () => {
                             </table>
                         </div>
                     ) : <div className='max-w-xxl space-y-4'><Text >No available rows</Text></div>}
-                    </ScrollArea>
                 </div>}
         </>
     );
